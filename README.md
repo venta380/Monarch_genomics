@@ -11,3 +11,5 @@ The final set of genotypes used in this study can be found in here:
 
 
 The file dadi_temp.py has the script to run demographic history using dadi. 
+
+Monarch_east_west_plots.py script give the genome scan plots 
