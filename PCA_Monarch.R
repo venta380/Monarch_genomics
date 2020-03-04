@@ -5,13 +5,15 @@ library(data.table)
 library(ggplot2)
 library(dplyr)
 library(reshape2)
-vcf.fn<-"for_PCA.vcf.gz"
+
+#replace "DPSCF3" "" -- good_pos.vcf
+
+vcf.fn<-"good_pos.vcf"
 snpgdsVCF2GDS(vcf.fn, "ccm.gds",  method="biallelic.only")
 genofile <- snpgdsOpen("ccm.gds")
 snpgdsSummary("ccm.gds")
 sample.id <- read.gdsn(index.gdsn(genofile, "sample.id"))
 pop_code <- read.table("pop.group", header = F)
-
 
 
 
