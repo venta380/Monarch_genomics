@@ -1,4 +1,7 @@
 This is a Repository for the data used for the paper: 
+
+![alt text](https://www.dropbox.com/s/hoxtq3jz23v073x/logo.png?dl=0 "Logo Title Text 1")
+
 # Genomic evidence for gene flow between monarchs with divergent migratory phenotypes and flight performance 
 
 The scripts used for mapping the population resequencing data to the reference genome and the SNP calling can be found in the directory “SNP_calling”
