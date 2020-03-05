@@ -8,6 +8,7 @@ The scripts used for mapping the population resequencing data to the reference g
 
 The final set of genotypes used in this study can be found in here:
 [link to download the VCF file]( https://www.dropbox.com/s/sawz9bn1sfc0fii/recal_snps_PASS_only_removed_repeats_20190315.vcf.gz?dl=0)
+
 The reference genome assembly used in this project is a version 3 scaffolds from Monarchbase:
 [link to download the reference genome assembly file]( http://monarchbase.umassmed.edu/download/Dp_genome_v3.fasta.gz)
 
