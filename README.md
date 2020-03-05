@@ -26,6 +26,11 @@ Genomic positions extracted from the genome annotation can be downloaded from:
 
 [link to download Codon position 3 genomic positions]( https://www.dropbox.com/s/fb22tvf5v1lg4ca/codon_df_3.csv.gz?dl=0)
 
+
+Chromosome assignments of each scaffold can be downloaded from this link:
+[link to download chromosome assignments](https://www.dropbox.com/s/1vp8suri5yjklbo/Chromosomes_final_2.txt?dl=0)
+
+
 The file dadi_temp.py has the script to run demographic history using dadi. 
 
 Monarch_east_west_plots.py script give the genome scan plots 
