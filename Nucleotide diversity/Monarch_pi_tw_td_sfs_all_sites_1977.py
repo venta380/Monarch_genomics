@@ -381,4 +381,3 @@ base=os.path.splitext(base)[0]
 final.to_csv(base+"_"+sites_type+'.csv')
 
 
-
