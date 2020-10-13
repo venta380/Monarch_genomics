@@ -1,4 +1,4 @@
-This is a Repository for the data used for the paper: 
+This is a Repository for the data used for various monarch genomic papers: 
 # [Genomic evidence for gene flow between monarchs with divergent migratory phenotypes and flight performance ](https://doi.org/10.1111/mec.15508)
 ![alt text](https://github.com/venta380/Monarch_genomics/blob/master/logo.png "Logo Title Text 1")
 
