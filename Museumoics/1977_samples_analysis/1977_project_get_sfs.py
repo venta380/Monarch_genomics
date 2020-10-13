@@ -22,7 +22,7 @@ import argparse
 
  
 def get_args():
-    parser = argparse.ArgumentParser(description='''This script gives nucleotide diversity , watterson's theta  and Tajima's D  from allele frequency files. 
+    parser = argparse.ArgumentParser(description='''This script gives SFS from allele frequency files. 
         For this you will need to have the follwoing files in a directory
         1) All positions for each codon position (codon1: codon_df_1.csv.gz; codon2: codon_df_2.csv.gz; codon3: codon_df_3.csv.gz; 4fold: codon_df_4d.csv.gz; 0fold: codon_df_0d.csv.gz;)
         2) for intergenic and all sites you will need to provide the refrence genome file as refrence.fa
@@ -33,7 +33,7 @@ def get_args():
         ''')
 
     parser.add_argument('-F', '--Freq', type=str, required=True)
-    parser.add_argument('-S', '--input_sites', type=str, required=True)
+    parser.add_argument('-S', '--input_sites', type=str, required=False)
     parser.add_argument('-I', '--sites_type', type=str, required=True)
     parser.add_argument('-P', '--Path', type=str, required=True)
     return parser.parse_args()
@@ -55,7 +55,6 @@ os.chdir(pwd)
 frequency_file=args.Freq
 input_sites=args.input_sites
 sites_type=args.sites_type
-part=int(args.part)
 condons=['4fold','0fold','codon1','codon2','codon3']
 
 
@@ -342,6 +341,7 @@ if sites_type in ['4fold','0fold','codon1','codon2','codon3','introns']:
     all_sites['BIN_START']=(np.floor(all_sites['POS']/10000)*10000)+1
     all_sites['BIN_END']=all_sites['BIN_START']+(10000-1)
 
+#all sites
 
 East_freq = output_good_sites_fequency_new(frequency_file, 16)
 East_freq = East_freq[East_freq['major_allele'].isin(['A','T','G','C'])]
@@ -360,13 +360,45 @@ elif sites_type == 'all':
 
 
 East_freq_2=East_freq_1.groupby('Ind')['Ind'].count()
-East_freq_2=East_freq_2/East_freq_2.sum()
 
 
 base=os.path.basename(frequency_file)
 base=os.path.splitext(base)[0]
 
 East_freq_2.to_csv(base+"_"+sites_type+'_sfs'+'.csv')
+
+
+##GC conserved sites
+
+East_freq = output_good_sites_fequency_new(frequency_file, 16)
+
+East_freq_1 = East_freq[(East_freq['major_allele'].isin(['A','T'])) & (East_freq['minor_allele'].isin(['A','T']))]
+East_freq_2 = East_freq[(East_freq['major_allele'].isin(['G','C'])) & (East_freq['minor_allele'].isin(['G','C']))]
+
+East_freq=pandas.concat([East_freq_1, East_freq_2], ignore_index=True)
+
+
+
+East_freq['POS']=East_freq['POS'].astype('int')
+East_freq['BIN_START']=0
+East_freq['BIN_START']=(np.floor(East_freq['POS']/10000)*10000)+1
+East_freq['BIN_END']=East_freq['BIN_START']+(10000-1)
+East_freq['Ind']=East_freq.minor_freq*16
+East_freq['Ind']=East_freq['Ind'].round()
+East_freq=East_freq[East_freq.Ind>=1.0]
+if sites_type != 'all':
+    East_freq_1=East_freq.merge(all_sites, on=['CHROM','POS','BIN_START', 'BIN_END'], how='inner')
+elif sites_type == 'all':
+    East_freq_1=East_freq
+
+
+East_freq_2=East_freq_1.groupby('Ind')['Ind'].count()
+
+
+base=os.path.basename(frequency_file)
+base=os.path.splitext(base)[0]
+
+East_freq_2.to_csv(base+"_"+sites_type+'_GCconserved_sfs'+'.csv')
 
 
 
