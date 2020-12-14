@@ -54,7 +54,8 @@ Sampling and quality summary of samples collected for this study.
 |mex536 | February 11, 2008 | Sierra Chincua, Mexico | M | 9.6611 | 98.01% | SRR155220 | 95.25% | 51.9754 | East |
 |mex1527 | February 13, 2008 | Cerro Pelon, Mexico | F | 7.3151 | 98.16% | SRR155220 | 94.57% | 51.9242 | East |
 
-#Summary 
+# Summary 
+
 Summary of number alleles shared and private between contemporary eastern (A) and western (B) samples with historical samples. 
 |1977 VS East | No of SNPs | Percentage |
 |--- | --- | --- |
