@@ -1,7 +1,7 @@
 This is a Repository for the data used for the paper: 
 # Whole genome analysis of historical samples shows an increase in effective population size of North American monarch butterflies
 
-# sampling
+# Sampling
 |Sample | Collection date | Collection site | Sex | Depth (X) | Mapped % | Accession | Covered on the reference | Average mapping quality | Group |
 |--- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 |02_77 | December 11, 1977 | Sierra Chincua | M | 8.106 | 97.52 | ERS5088377 | 94.39% | 52.3812 | 1977 |
