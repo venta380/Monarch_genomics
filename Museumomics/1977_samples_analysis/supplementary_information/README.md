@@ -1,4 +1,5 @@
-# Sampling
+# Sampling: 
+Sampling and quality summary of samples collected for this study.
 |Sample | Collection date | Collection site | Sex | Depth (X) | Mapped % | Accession | Covered on the reference | Average mapping quality | Group |
 |--- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 |02_77 | December 11, 1977 | Sierra Chincua | M | 8.106 | 97.52 | ERS5088377 | 94.39% | 52.3812 | 1977 |
@@ -52,3 +53,23 @@
 |mex915 | January 9, 2007 | Sierra Chincua, Mexico | F | 9.8295 | 98.23% | SRR155220 | 95.27% | 52.039 | East |
 |mex536 | February 11, 2008 | Sierra Chincua, Mexico | M | 9.6611 | 98.01% | SRR155220 | 95.25% | 51.9754 | East |
 |mex1527 | February 13, 2008 | Cerro Pelon, Mexico | F | 7.3151 | 98.16% | SRR155220 | 94.57% | 51.9242 | East |
+
+#Summary 
+Summary of number alleles shared and private between contemporary eastern (A) and western (B) samples with historical samples. 
+|1977 VS East | No of SNPs | Percentage |
+|--- | --- | --- |
+|Shared |	2794036 |	33.09 |
+|Private 1977 | 2169855 |	25.70 |
+|Private East | 3479427 |	41.21 |
+|Total |	8443318	| |
+
+
+|1977 VS West |	No of SNPs | Percentage |
+|--- | --- | --- |
+|Shared |	2805502 |	32.80 |
+|Private 1977 |	2169919 |	25.37 |
+|Private West |	3576891 |	41.82 |
+|Total |	8552312 |	|
+
+
+
