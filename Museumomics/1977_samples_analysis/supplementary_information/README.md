@@ -73,7 +73,7 @@ Summary of number alleles shared and private between contemporary eastern (A) an
 |Total |	8552312 |	|
 
 # Samples used
-Sample IDs used for both replicates to estimate Nucleotide diversity (π), Waterson’s estimator (w) and Tajima's D (Td) statistics for historical samples. 
+Sample IDs used for both replicates to estimate Nucleotide diversity (π), Waterson’s estimator (Θw) and Tajima's D (Td) statistics for historical samples. 
 | Replicate 1 |	Replicate 2 |
 |--- | --- |
 | 02_77 | 02_77 |
