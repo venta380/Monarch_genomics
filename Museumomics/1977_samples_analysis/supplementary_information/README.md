@@ -86,6 +86,7 @@ Sample IDs used for both replicates to estimate Nucleotide diversity (π), Water
 | 12_77 | 13_77 |
 
 # Site frequency spectrums (SFS)
+Site frequency spectrum (SFS) of historical and contemporary monarchs, calculated for all the different genomic site categories. In all the site categories the historical samples showed lower numbers of SNPs at all the allele frequency classes compared to the contemporary samples. 
 
 <img style="float: right;" src="./images/SFS.png">
 
