@@ -85,4 +85,8 @@ Sample IDs used for both replicates to estimate Nucleotide diversity (π), Water
 | 10_77 | 12_77 |
 | 12_77 | 13_77 |
 
+# Site frequency spectrums (SFS)
+
+<img style="float: right;" src="./images/SFS.png">
+
 
