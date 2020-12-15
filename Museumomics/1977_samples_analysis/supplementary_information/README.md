@@ -90,4 +90,9 @@ Site frequency spectrum (SFS) of historical and contemporary monarchs, calculate
 
 <img style="float: right;" src="./images/SFS.png">
 
+# bioanalyzer fragment analyzer
+Outputs of bioanalyzer fragment analyzer of historical samples.  The sample ID is mentioned with in the box.
+
+<img style="float: right;" src="./images/bioan.png">
+
 
