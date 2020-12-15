@@ -95,4 +95,9 @@ Outputs of bioanalyzer fragment analyzer of historical samples.  The sample ID i
 
 <img style="float: right;" src="./images/bioan.png">
 
+# Coverage bias analysis
+We calculated the difference between the number of sites covered in historical and contemporary samples. We have divided these differences into 4 bins with quartiles of 25%. We have consistently found lower nucleotide diversities in historical samples compared to the contemporary samples in all the quartiles.
+
+<img style="float: right;" src="./images/COV.png">
+
 
