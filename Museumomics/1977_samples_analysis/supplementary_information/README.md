@@ -1,3 +1,4 @@
+# Addition supplements for the 1977 analysis 
 # Sampling: 
 Sampling and quality summary of samples collected for this study.
 |Sample | Collection date | Collection site | Sex | Depth (X) | Mapped % | Accession | Covered on the reference | Average mapping quality | Group |
