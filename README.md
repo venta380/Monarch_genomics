@@ -6,7 +6,7 @@ This is a Repository for the data used for various monarch genomic papers:
 
 # [ For 1977 samples analysis click here ](https://github.com/venta380/Monarch_genomics/tree/master/Museumomics/1977_samples_analysis)
 
-# [ For immune_gene_analysis click here ](https://github.com/venta380/Monarch_genomics/tree/master/immune_gene_analysis)
+# [ For Immune gene analysis click here ](https://github.com/venta380/Monarch_genomics/tree/master/immune_gene_analysis)
 
 The scripts used for mapping the population resequencing data to the reference genome and the SNP calling can be found in the directory “SNP_calling”
 
