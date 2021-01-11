@@ -9,13 +9,11 @@ import itertools
 import math
 import time
 import sys
-#import personal_popgen
+import personal_popgen
 import re
 import random 
 from Bio import SeqIO
 from Bio.Seq import Seq
-#sns.set(font_scale=1.5)
-#sns.set_style("whitegrid", {'axes.grid' : False})
 import argparse
 
  
@@ -23,7 +21,7 @@ import argparse
  
  
 def get_args():
-    parser = argparse.ArgumentParser(description='''This script gives nucleotide diversity (Pi), watterson's theta (θw) and Tajima's D (Td) from allele frequency files. 
+    parser = argparse.ArgumentParser(description='''This script gives nucleotide diversity , watterson's theta  and Tajima's D  from allele frequency files. 
         For this you will need to have the follwoing files in a directory
         1) All positions for each codon position (codon1: codon_df_1.csv.gz; codon2: codon_df_2.csv.gz; codon3: codon_df_3.csv.gz; 4fold: codon_df_4d.csv.gz; 0fold: codon_df_0d.csv.gz;)
         2) for intergenic and all sites you will need to provide the refrence genome file as refrence.fa
@@ -31,15 +29,25 @@ def get_args():
         -S input sites (CSV file with sites to be used)
         -I sites type (codon1/codon2/codon3/4fold/0fold)
         -P Path
+        -Sec Section
         ''')
 
     parser.add_argument('-F', '--Freq', type=str, required=True)
     parser.add_argument('-S', '--input_sites', type=str, required=True)
     parser.add_argument('-I', '--sites_type', type=str, required=True)
     parser.add_argument('-P', '--Path', type=str, required=True)
+    parser.add_argument('-Sec', '--part', type=int, required=True)
     return parser.parse_args()
 
 args = get_args()
+
+
+#path='/scratch/vt20265/bam_files'
+#frequency_file='/scratch/vt20265/1977.frq'
+#input_sites='codon_df_1.csv'
+#sites_type='codon1'
+#part=0
+
 
 
 pwd=args.Path
@@ -48,63 +56,15 @@ os.chdir(pwd)
 frequency_file=args.Freq
 input_sites=args.input_sites
 sites_type=args.sites_type
+part=int(args.part)
+condons=['4fold','0fold','codon1','codon2','codon3']
 
 
-#frequency_file='/scratch/vt20265/1977.frq'
-#input_sites="codon_df_4d.csv.gz"
-#sites_type='4fold'
 
-
-if sites_type=='4fold':
-    all_sites=pandas.read_csv(input_sites,names=['CHROM','POS'], sep=' ',header=None)
-elif sites_type=='0fold':
-    codon_df_0_exclude=pandas.read_csv('codon_df_0_exclude.csv.gz',names=['CHROM','POS'], sep=' ',header=None)
-    codon_df_1=pandas.read_csv('codon_df_1.csv.gz',names=['CHROM','POS','major_allele'], sep=' ',header=None)
-    codon_df_2=pandas.read_csv('codon_df_2.csv.gz',names=['CHROM','POS','major_allele'], sep=' ',header=None)
-    codon_df_3=pandas.read_csv('codon_df_3.csv.gz',names=['CHROM','POS','major_allele'], sep=' ',header=None)  
-    codon_df_0d=pandas.concat([codon_df_1, codon_df_2], ignore_index=True)
-    codon_df_0d=codon_df_0d.merge(codon_df_0_exclude, how='outer', indicator=True)
-    codon_df_0d=codon_df_0d.query('_merge == "left_only"').drop('_merge', 1).drop('major_allele', 1)
-    all_sites=codon_df_0d
-    codon_df_0_exclude=0
-    codon_df_1=0
-    codon_df_2=0
-    codon_df_3=0
-elif sites_type=='codon1':
-    all_sites=pandas.read_csv(input_sites,names=['CHROM','POS','major_allele'], sep=' ',header=None)
-elif sites_type=='codon2':
-    all_sites=pandas.read_csv(input_sites,names=['CHROM','POS','major_allele'], sep=' ',header=None)
-elif sites_type=='codon3':
-    all_sites=pandas.read_csv(input_sites,names=['CHROM','POS','major_allele'], sep=' ',header=None)
-elif sites_type=='introns':
-    all_sites=pandas.read_csv(input_sites,names=['POS','CHROM'], sep=' ',header=None)
-elif sites_type=='intergenic':
-    fasta_DPlex=fasta_dict('/work/smalab/Venkat/genome/Danaus_plexippus_v3_-_scaffolds.fa')
-    codon_df_1=pandas.read_csv('codon_df_1.csv.gz',names=['CHROM','POS','major_allele'], sep=' ',header=None)
-    codon_df_2=pandas.read_csv('codon_df_2.csv.gz',names=['CHROM','POS','major_allele'], sep=' ',header=None)
-    codon_df_3=pandas.read_csv('codon_df_3.csv.gz',names=['CHROM','POS','major_allele'], sep=' ',header=None)
-    introns=pandas.read_csv('introns.csv.gz',names=['POS','CHROM'], sep=' ',header=None)
-    intergenic_exclude=pandas.concat([codon_df_1[['CHROM','POS']], codon_df_2[['CHROM','POS']], codon_df_3[['CHROM','POS']], introns[['CHROM','POS']]], ignore_index=True)
-    intergenic_exclude=intergenic_exclude[['CHROM','POS']]
-    intergenic=pandas.DataFrame(columns=['CHROM','POS'])
-    for i in fasta_DPlex.keys():
-        chrom_len=len(fasta_DPlex[i])
-        all_site=list(range(1,chrom_len+1))
-        exlude_sites=list(intergenic_exclude[(intergenic_exclude.CHROM == i )]['POS'])
-        temp=pandas.DataFrame({'CHROM':[i]*len(all_site), 'POS':all_site})
-        temp=temp[~temp['POS'].isin(exlude_sites)]
-        intergenic=intergenic.append(temp, ignore_index=True)
-    all_sites=intergenic
-elif sites_type=='all':
-    fasta_DPlex=fasta_dict('/work/smalab/Venkat/genome/Danaus_plexippus_v3_-_scaffolds.fa')
-    all_sites=pandas.DataFrame(columns=['CHROM','POS'])
-    for i in fasta_DPlex.keys():
-        chrom_len=len(fasta_DPlex[i])
-        all_site=list(range(1,chrom_len+1))
-        exlude_sites=list(intergenic_exclude[(intergenic_exclude.CHROM == i )]['POS'])
-        temp=pandas.DataFrame({'CHROM':[i]*len(all_site), 'POS':all_site})
-        all_sites=all_sites.append(temp, ignore_index=True)
-
+chromosome=pandas.read_csv("/scratch/vt20265/bam_files/windows.bed", sep='\t', names=['CHROM','BIN_START','BIN_END'], header=None)
+temp=np.array_split(chromosome, 20)[part]
+temp=list(set(temp.CHROM))
+chromosome=chromosome[chromosome['CHROM'].isin(temp)]
 
 
 
@@ -345,39 +305,152 @@ def output_good_sites_fequency_new(freq_file1,chr_filter):
     return new_output
 
 
+if sites_type=='4fold':
+    all_sites=pandas.read_csv(input_sites,names=['CHROM','POS'], sep=' ',header=None)
+elif sites_type=='0fold':
+    all_sites=pandas.read_csv(input_sites,names=['CHROM','POS'], sep=' ',header=None)
+elif sites_type=='codon1':
+    all_sites=pandas.read_csv(input_sites,names=['CHROM','POS'], sep=' ',header=None)
+elif sites_type=='codon2':
+    all_sites=pandas.read_csv(input_sites,names=['CHROM','POS'], sep=' ',header=None)
+elif sites_type=='codon3':
+    all_sites=pandas.read_csv(input_sites,names=['CHROM','POS'], sep=' ',header=None)
+elif sites_type=='introns':
+    all_sites=pandas.read_csv(input_sites,names=['CHROM','POS'], sep='\t',header=None)
+elif sites_type=='intergenic':
+    all_sites_2=pandas.read_csv(input_sites,skiprows=1,names=['CHROM','BIN_START','BIN_END','N_sites'])
+    fasta_DPlex=personal_popgen.fasta_dict('/work/smalab/Venkat/genome/Danaus_plexippus_v3_-_scaffolds.fa')
+    codon_df_1=pandas.read_csv('codon_df_1.csv',names=['CHROM','POS'], sep=' ',header=None)
+    codon_df_1=codon_df_1[codon_df_1['CHROM'].isin(temp)]
+    codon_df_2=pandas.read_csv('codon_df_2.csv',names=['CHROM','POS'], sep=' ',header=None)
+    codon_df_2=codon_df_2[codon_df_2['CHROM'].isin(temp)]
+    codon_df_3=pandas.read_csv('codon_df_3.csv',names=['CHROM','POS'], sep=' ',header=None)
+    codon_df_3=codon_df_3[codon_df_3['CHROM'].isin(temp)]
+    introns=pandas.read_csv('introns.csv',names=['CHROM','POS'], sep=' ',header=None)
+    introns=introns[introns['CHROM'].isin(temp)]
+    intergenic_exclude=pandas.concat([codon_df_1[['CHROM','POS']], codon_df_2[['CHROM','POS']], codon_df_3[['CHROM','POS']], introns[['CHROM','POS']]], ignore_index=True)
+    intergenic_exclude=intergenic_exclude[['CHROM','POS']]
+    intergenic=pandas.DataFrame(columns=['CHROM','POS'])
+    for i in temp:
+        chrom_len=len(fasta_DPlex[i])
+        all_site=list(range(1,chrom_len+1))
+        exlude_sites=list(intergenic_exclude[(intergenic_exclude.CHROM == i )]['POS'])
+        temp_1=pandas.DataFrame({'CHROM':[i]*len(all_site), 'POS':all_site})
+        temp_1=temp_1[~temp_1['POS'].isin(exlude_sites)]
+        intergenic=intergenic.append(temp_1, ignore_index=True)
+    all_sites=intergenic
+    all_sites['POS']=all_sites['POS'].astype('int')
+    all_sites['BIN_START']=0
+    all_sites['BIN_START']=(np.floor(all_sites['POS']/10000)*10000)+1
+    all_sites['BIN_END']=all_sites['BIN_START']+(10000-1)
+if sites_type=='all':
+    all_sites_2=pandas.read_csv(input_sites,skiprows=1,names=['CHROM','BIN_START','BIN_END','N_sites'])
+
+
+if sites_type in ['4fold','0fold','codon1','codon2','codon3','introns']:
+    all_sites['POS']=all_sites['POS'].astype('int')
+    all_sites['BIN_START']=0
+    all_sites['BIN_START']=(np.floor(all_sites['POS']/10000)*10000)+1
+    all_sites['BIN_END']=all_sites['BIN_START']+(10000-1)
+    all_sites_2=all_sites.groupby(['CHROM','BIN_START','BIN_END'])['POS'].count()
+    all_sites_2=all_sites_2.reset_index()
+    all_sites_2=all_sites_2.rename(index=str, columns={'POS': 'N_sites' })
 
 
 East_freq = output_good_sites_fequency_new(frequency_file, 16)
+East_freq = East_freq[East_freq['CHROM'].isin(temp)]
 East_freq = East_freq[East_freq['major_allele'].isin(['A','T','G','C'])]
 East_freq = East_freq[East_freq['minor_allele'].isin(['A','T','G','C'])]
 East_freq['POS']=East_freq['POS'].astype('int')
 East_freq['BIN_START']=0
-East_freq['BIN_START']=(np.floor(East_freq['POS']/100000)*100000)+1
-East_freq['BIN_END']=East_freq['BIN_START']+(100000-1)
+East_freq['BIN_START']=(np.floor(East_freq['POS']/10000)*10000)+1
+East_freq['BIN_END']=East_freq['BIN_START']+(10000-1)
 East_freq['Ind']=East_freq.minor_freq*16
 East_freq['Ind']=East_freq['Ind'].round()
 East_freq=East_freq[East_freq.Ind>=1.0]
+if sites_type != 'all':
+    East_freq=East_freq.merge(all_sites, on=['CHROM','POS','BIN_START', 'BIN_END'], how='inner')
 
-windows=pandas.read_csv("windows.csv.gz")
+
+windows=chromosome
+East_freq_1=East_freq[East_freq.Ind==1.0]
+East_freq_1=East_freq_1.groupby(['CHROM', 'BIN_START', 'BIN_END'])['Ind'].count()
+East_freq_1=East_freq_1.reset_index()
+East_freq_1=East_freq_1.rename(index=str, columns={'Ind': 'IND_1' })
+East_freq_2=East_freq[East_freq.Ind==2.0]
+East_freq_2=East_freq_2.groupby(['CHROM', 'BIN_START', 'BIN_END'])['Ind'].count()
+East_freq_2=East_freq_2.reset_index()
+East_freq_2=East_freq_2.rename(index=str, columns={'Ind': 'IND_2' })
+East_freq_3=East_freq[East_freq.Ind==3.0]
+East_freq_3=East_freq_3.groupby(['CHROM', 'BIN_START', 'BIN_END'])['Ind'].count()
+East_freq_3=East_freq_3.reset_index()
+East_freq_3=East_freq_3.rename(index=str, columns={'Ind': 'IND_3' })
+East_freq_4=East_freq[East_freq.Ind==4.0]
+East_freq_4=East_freq_4.groupby(['CHROM', 'BIN_START', 'BIN_END'])['Ind'].count()
+East_freq_4=East_freq_4.reset_index()
+East_freq_4=East_freq_4.rename(index=str, columns={'Ind': 'IND_4' })
+East_freq_5=East_freq[East_freq.Ind==5.0]
+East_freq_5=East_freq_5.groupby(['CHROM', 'BIN_START', 'BIN_END'])['Ind'].count()
+East_freq_5=East_freq_5.reset_index()
+East_freq_5=East_freq_5.rename(index=str, columns={'Ind': 'IND_5' })
+East_freq_6=East_freq[East_freq.Ind==6.0]
+East_freq_6=East_freq_6.groupby(['CHROM', 'BIN_START', 'BIN_END'])['Ind'].count()
+East_freq_6=East_freq_6.reset_index()
+East_freq_6=East_freq_6.rename(index=str, columns={'Ind': 'IND_6' })
+East_freq_7=East_freq[East_freq.Ind==7.0]
+East_freq_7=East_freq_7.groupby(['CHROM', 'BIN_START', 'BIN_END'])['Ind'].count()
+East_freq_7=East_freq_7.reset_index()
+East_freq_7=East_freq_7.rename(index=str, columns={'Ind': 'IND_7' })
+East_freq_8=East_freq[East_freq.Ind==8.0]
+East_freq_8=East_freq_8.groupby(['CHROM', 'BIN_START', 'BIN_END'])['Ind'].count()
+East_freq_8=East_freq_8.reset_index()
+East_freq_8=East_freq_8.rename(index=str, columns={'Ind': 'IND_8' })
+windows=East_freq_1.merge(windows, on=['CHROM', 'BIN_START', 'BIN_END'], how='outer')
+windows=East_freq_2.merge(windows, on=['CHROM', 'BIN_START', 'BIN_END'], how='outer')
+windows=East_freq_3.merge(windows, on=['CHROM', 'BIN_START', 'BIN_END'], how='outer')
+windows=East_freq_4.merge(windows, on=['CHROM', 'BIN_START', 'BIN_END'], how='outer')
+windows=East_freq_5.merge(windows, on=['CHROM', 'BIN_START', 'BIN_END'], how='outer')
+windows=East_freq_6.merge(windows, on=['CHROM', 'BIN_START', 'BIN_END'], how='outer')
+windows=East_freq_7.merge(windows, on=['CHROM', 'BIN_START', 'BIN_END'], how='outer')
+windows=East_freq_8.merge(windows, on=['CHROM', 'BIN_START', 'BIN_END'], how='outer')
+windows=windows[['CHROM','BIN_START','BIN_END','IND_1','IND_2','IND_3','IND_4','IND_5','IND_6','IND_7','IND_8']]
+windows=windows.fillna(0.0)
 
 
-final=pandas.DataFrame(columns=['CHROM','BIN_START','Pi','Tw','Td' ])
+final=pandas.DataFrame(columns=['CHROM','BIN_START','Pi','Tw','Td','N_sites'])
 for window_index, window_1 in windows.iterrows():
-    specific=East_freq.loc[(East_freq['CHROM']==window_1.CHROM)&(East_freq['POS']>=float(window_1.BIN_START))&(East_freq['POS']<=float(window_1.BIN_END))]
-    all_sites_temp=all_sites[(all_sites['CHROM']==window_1.CHROM)&(all_sites['POS']>=window_1.BIN_START)&(all_sites['POS']<=window_1.BIN_END)]
-    print (len(all_sites_temp))
-    if (len(all_sites_temp) > 100) and (len(specific) > 100):
-        sf_intergenic=get_site_freq_spectrum(specific,all_sites_temp)
-        sf_sum_intergenic=len(all_sites_temp)
-        sf_intergenic=list(sf_intergenic)
-        sf_intergenic.append(sf_sum_intergenic)
-        intergenic_stats=afs_basic_stats(sf_intergenic)
-        temp=pandas.DataFrame({'CHROM':[window_1.CHROM], 'BIN_START':[window_1.BIN_START],'Pi':[intergenic_stats[0]],'Tw':[intergenic_stats[1]],'Td':[intergenic_stats[2]]})
-        final=final.append(temp)
+    sites_window=all_sites_2[(all_sites_2['CHROM']==window_1.CHROM)&(all_sites_2['BIN_START']==window_1.BIN_START)&(all_sites_2['BIN_END']==window_1.BIN_END)]['N_sites']
+    if len(sites_window) > 0:
+        sites_window=int(sites_window)
+        if (sites_type=='all')&(sites_window>1000):
+            sf_sum_intergenic=[window_1.IND_1,  window_1.IND_2,  window_1.IND_3,  window_1.IND_4,  window_1.IND_5,  window_1.IND_6,  window_1.IND_7,  window_1.IND_8,0,0,0,0,0,0,0, int(sites_window)]
+            intergenic_stats=afs_basic_stats(sf_sum_intergenic)
+            temp=pandas.DataFrame({'CHROM':[window_1.CHROM], 'BIN_START':[window_1.BIN_START],'Pi':[intergenic_stats[0]],'Tw':[intergenic_stats[1]],'Td':[intergenic_stats[2]], 'N_sites':[int(sites_window)]})
+            final=final.append(temp)
+        elif (sites_type=='intergenic')&(sites_window>1000):
+            sf_sum_intergenic=[window_1.IND_1,  window_1.IND_2,  window_1.IND_3,  window_1.IND_4,  window_1.IND_5,  window_1.IND_6,  window_1.IND_7,  window_1.IND_8,0,0,0,0,0,0,0, int(sites_window)]
+            intergenic_stats=afs_basic_stats(sf_sum_intergenic)
+            temp=pandas.DataFrame({'CHROM':[window_1.CHROM], 'BIN_START':[window_1.BIN_START],'Pi':[intergenic_stats[0]],'Tw':[intergenic_stats[1]],'Td':[intergenic_stats[2]], 'N_sites':[int(sites_window)]})
+            final=final.append(temp)
+        elif (sites_type=='introns')&(sites_window>1000):
+            sf_sum_intergenic=[window_1.IND_1,  window_1.IND_2,  window_1.IND_3,  window_1.IND_4,  window_1.IND_5,  window_1.IND_6,  window_1.IND_7,  window_1.IND_8,0,0,0,0,0,0,0, int(sites_window)]
+            intergenic_stats=afs_basic_stats(sf_sum_intergenic)
+            temp=pandas.DataFrame({'CHROM':[window_1.CHROM], 'BIN_START':[window_1.BIN_START],'Pi':[intergenic_stats[0]],'Tw':[intergenic_stats[1]],'Td':[intergenic_stats[2]], 'N_sites':[int(sites_window)]})
+            final=final.append(temp)
+        elif (sites_type in condons) & (sites_window>100) :
+                sf_sum_intergenic=[window_1.IND_1,  window_1.IND_2,  window_1.IND_3,  window_1.IND_4,  window_1.IND_5,  window_1.IND_6,  window_1.IND_7,  window_1.IND_8,0,0,0,0,0,0,0, int(sites_window)]
+                intergenic_stats=afs_basic_stats(sf_sum_intergenic)
+                temp=pandas.DataFrame({'CHROM':[window_1.CHROM], 'BIN_START':[window_1.BIN_START],'Pi':[intergenic_stats[0]],'Tw':[intergenic_stats[1]],'Td':[intergenic_stats[2]], 'N_sites':[int(sites_window)]})
+                final=final.append(temp)
+
+
 
 base=os.path.basename(frequency_file)
 base=os.path.splitext(base)[0]
 
-final.to_csv(base+"_"+sites_type+'.csv')
+final.to_csv(base+"_"+sites_type+'_'+str(part)+'_stats'+'.csv')
+
+
+
 
 
