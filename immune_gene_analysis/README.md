@@ -22,7 +22,7 @@ This script gives nucleotide diversity , watterson's theta  and Tajima's D  from
 ```
 
 # Population specific CDS (Coding sequence) files generation.  
-## Population_specific_CDS.py
+### Population_specific_CDS.py
 ```
 python population_specific_CDS.py -f irish_juvernica.frq -i 10 -o irish_juvernica
 
@@ -33,7 +33,7 @@ python population_specific_CDS.py -f irish_juvernica.frq -i 10 -o irish_juvernic
 ```
 # Pn and Ps calculator for each gene.  
 
-## PnPs_script.py
+### PnPs_script.py
 This python script will callculate PnPs for each gene. 
 use the output from the previous script (Population_specific_CDS.py) as the input for this. 
 ```
@@ -47,13 +47,13 @@ python PnPs_script.py   irish_juvernica.CDS.fasta all > irish_juvernica.table
 Prepare gene allignments before you run the script paml.sh. Each gene should be in a new file ending with .fasta. 
 # [ To download the scripts to callculate DnDs click here](https://github.com/venta380/Leptidea_selection_project/tree/master/DnDs)
 
-## catfasta2phyml.pl
+### catfasta2phyml.pl
 Used within paml.sh to convert fasta format to .phyml
 
-## codeml_1.ctl
+### codeml_1.ctl
 Input control file for paml
 
-## tree_1.tre
+### tree_1.tre
 Input tree for PAML
 
 Allignemt format example
@@ -63,5 +63,6 @@ ATGCATGCATGCATCG
 >L_reali
 ATGCATGCATGCATCG
 ```
-#
-
+# QC Filters, calculating  DOS, α and ω_ α
+### Dn_DS_Pn_PS_plot_Danaus_eresimus.py
+This script has details about these callculations
