@@ -66,3 +66,7 @@ ATGCATGCATGCATCG
 # QC Filters, calculating  DOS, α and ω_ α
 ### Dn_DS_Pn_PS_plot_Danaus_eresimus.py
 This script has details about these callculations
+
+# Final results and data
+
+Please see popgen_stats_all_genes_full.csv to see the final results. 
