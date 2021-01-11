@@ -28,6 +28,9 @@ Genomic positions extracted from the genome annotation can be downloaded from:
 
 [link to download Codon position 3 genomic positions]( https://www.dropbox.com/s/fb22tvf5v1lg4ca/codon_df_3.csv.gz?dl=0)
 
+[link to download 4-fold genomic positions]( https://www.dropbox.com/s/vhj50rpoaqy9clt/codon_df_4d.csv.gz?dl=0)
+
+
 The final set of genotypes used in this study can be found in here:
 [link to download the VCF file]( https://www.dropbox.com/s/sawz9bn1sfc0fii/recal_snps_PASS_only_removed_repeats_20190315.vcf.gz?dl=0)
 
