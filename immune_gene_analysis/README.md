@@ -43,8 +43,9 @@ python PnPs_script.py   irish_juvernica.CDS.fasta all > irish_juvernica.table
 
 # Dn and Ds calculator for each gene.  
 
-# DnDs scripts
+## DnDs scripts
 Prepare gene allignments before you run the script paml.sh. Each gene should be in a new file ending with .fasta. 
+# [ to download the scripts to callculate DnDs click here](https://github.com/venta380/Leptidea_selection_project/tree/master/DnDs)
 
 ## catfasta2phyml.pl
 Used within paml.sh to convert fasta format to .phyml
