@@ -31,6 +31,8 @@ python population_specific_CDS.py -f irish_juvernica.frq -i 10 -o irish_juvernic
 -o output file name
 
 ```
+# Pn and Ps calculator for each gene.  
+
 ## PnPs_script.py
 This python script will callculate PnPs for each gene. 
 use the output from the previous script (Population_specific_CDS.py) as the input for this. 
@@ -39,5 +41,26 @@ python PnPs_script.py   irish_juvernica.CDS.fasta all > irish_juvernica.table
 
 ```
 
+# Dn and Ds calculator for each gene.  
+
+# DnDs scripts
+Prepare gene allignments before you run the script paml.sh. Each gene should be in a new file ending with .fasta. 
+
+## catfasta2phyml.pl
+Used within paml.sh to convert fasta format to .phyml
+
+## codeml_1.ctl
+Input control file for paml
+
+## tree_1.tre
+Input tree for PAML
+
+Allignemt format example
+```
+>L_sinapis
+ATGCATGCATGCATCG
+>L_reali
+ATGCATGCATGCATCG
+```
 
 
