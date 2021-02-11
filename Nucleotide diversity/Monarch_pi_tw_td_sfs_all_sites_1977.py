@@ -29,7 +29,10 @@ def get_args():
         -S input sites (CSV file with sites to be used)
         -I sites type (codon1/codon2/codon3/4fold/0fold)
         -P Path
+        -D .gdepth file
+        -c coverage filter
         -Sec Section
+        -Ind samples list
         ''')
 
     parser.add_argument('-F', '--Freq', type=str, required=True)
@@ -37,17 +40,25 @@ def get_args():
     parser.add_argument('-I', '--sites_type', type=str, required=True)
     parser.add_argument('-P', '--Path', type=str, required=True)
     parser.add_argument('-Sec', '--part', type=int, required=True)
+    parser.add_argument('-D', '--Depth', type=str, required=True)
+    parser.add_argument('-c', '--coverage', type=int, required=True)
+    parser.add_argument('-Ind', '--list_of_samples', type=str, required=True)
     return parser.parse_args()
 
 args = get_args()
 
 
+#python Monarch_pi_tw_td_sfs_all_sites_1977.py -F '/scratch/vt20265/1977_best.frq' -S '1977_10000_Best_all_'$i'_N_sites' -I 'all' -P '/scratch/vt20265/bam_files' -Sec $i -D '/scratch/vt20265/1977_best.gdepth' -c 2  -Ind "/scratch/vt20265/lists/randomly_selected/1977_best.txt" &
+
 #path='/scratch/vt20265/bam_files'
 #frequency_file='/scratch/vt20265/1977.frq'
-#input_sites='codon_df_1.csv'
-#sites_type='codon1'
+#input_sites='1977_10000_Best_2_X_all_0_N_sites'
+#sites_type='all'
 #part=0
-
+#Depth_file='/scratch/vt20265/1977_best.gdepth'
+#coverage=2
+#list_of_samples = open("/scratch/vt20265/lists/randomly_selected/1977_best.txt", 'r')
+#list_of_samples=[i.strip() for i in list_of_samples]
 
 
 pwd=args.Path
@@ -58,13 +69,26 @@ input_sites=args.input_sites
 sites_type=args.sites_type
 part=int(args.part)
 condons=['4fold','0fold','codon1','codon2','codon3']
-
+Depth_file=args.Depth
+coverage_filter=args.coverage
+list_of_samples = open(args.list_of_samples, 'r')
+list_of_samples=[i.strip() for i in list_of_samples]
 
 
 chromosome=pandas.read_csv("/scratch/vt20265/bam_files/windows.bed", sep='\t', names=['CHROM','BIN_START','BIN_END'], header=None)
 temp=np.array_split(chromosome, 20)[part]
 temp=list(set(temp.CHROM))
 chromosome=chromosome[chromosome['CHROM'].isin(temp)]
+
+
+ 
+def  coverage_filter_for_SNPs(file, depth, list_of_samples, scaffolds):
+        nextone=pandas.read_csv(file, sep='\t')
+        nextone=nextone[nextone['CHROM'].isin(scaffolds)]
+        temp=nextone[list_of_samples]
+        nextone=nextone[temp[temp >= int(depth)].count(axis=1) >= len(list_of_samples)]
+        del temp
+        return nextone[['CHROM','POS']]
 
 
 
@@ -357,6 +381,8 @@ if sites_type in ['4fold','0fold','codon1','codon2','codon3','introns']:
     all_sites_2=all_sites_2.rename(index=str, columns={'POS': 'N_sites' })
 
 
+
+
 East_freq = output_good_sites_fequency_new(frequency_file, 16)
 East_freq = East_freq[East_freq['CHROM'].isin(temp)]
 East_freq = East_freq[East_freq['major_allele'].isin(['A','T','G','C'])]
@@ -371,6 +397,11 @@ East_freq=East_freq[East_freq.Ind>=1.0]
 if sites_type != 'all':
     East_freq=East_freq.merge(all_sites, on=['CHROM','POS','BIN_START', 'BIN_END'], how='inner')
 
+
+coverage_filtered_SNPs=coverage_filter_for_SNPs(Depth_file, coverage, list_of_samples, temp):
+
+
+East_freq=East_freq.merge(coverage_filtered_SNPs, on=['CHROM', 'POS'], how='inner')
 
 windows=chromosome
 East_freq_1=East_freq[East_freq.Ind==1.0]
@@ -448,7 +479,7 @@ for window_index, window_1 in windows.iterrows():
 base=os.path.basename(frequency_file)
 base=os.path.splitext(base)[0]
 
-final.to_csv(base+"_"+sites_type+'_'+str(part)+'_stats'+'.csv')
+final.to_csv(base+"_"+sites_type+'_'+str(coverage_filter)+'_X_'+str(part)+'_stats'+'.csv')
 
 
 
