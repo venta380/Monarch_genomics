@@ -39,7 +39,7 @@ sleep 10m
 done
 done
 
-for j in 2 3
+for j in 2 3 4
 do
 for i in {0..19}
 do 
